@@ -232,6 +232,8 @@ b,strong{font-weight:900}
 .info .rar i{font-style:normal;color:#fff;opacity:.85}
 .info .ds{font-size:16px;font-weight:700;line-height:1.25;color:#4a2a1a}
 .info .ex{font-size:14px;font-weight:800;color:#8a5a3a;margin-top:6px}
+.sellb{margin-top:10px;font-size:13px;padding:9px 12px 8px}
+.sellb .ic{width:18px;height:18px}
 .info .x{position:absolute;right:10px;top:8px;font-size:12px;font-weight:900;color:#a08060}
 
 /* panel (bag/ach/how/menu) */
@@ -1502,7 +1504,12 @@ function showPick(offer){return new Promise(res=>{const ov=$('#pick'),box=$('#pC
 /* ================= INFO / BAG / ACH / HOW / MENU ================= */
 function showInfo(o){const ov=$('#info');let t,d,r,ex='';if(o.charm){d=CHARM[o.charm];r=RAR.H;t=d.s}else if(o.t){t=o.t;d=SYM[t];r=RAR[d.r];if(o.val!=null)ex=`Last pull: +${o.val}`}else{ov.innerHTML='';return}
  if(!o.charm&&run&&t!=='skull'){const n=run.bag.filter(b=>b.t===t).length;ex=(ex?ex+' · ':'')+`In your bag: ${n}`}
- ov.innerHTML=`<div class="info" style="--rc:${r.c};--rcg:${r.g}"><div class="x">✕</div><div class="art">${img(t)}</div><div><div class="nm">${d.n}</div><div class="rar">${r.n}${o.charm||t==='skull'?'':` <i>· BASE ${d.v}</i>`}</div><div class="ds">${hl(d.d)}</div>${ex?`<div class="ex">${ex}</div>`:''}</div></div>`;ov.classList.add('on');S.ui();ov.onclick=()=>ov.classList.remove('on')}
+ ov.innerHTML=`<div class="info" style="--rc:${r.c};--rcg:${r.g}"><div class="x">✕</div><div class="art">${img(t)}</div><div><div class="nm">${d.n}</div><div class="rar">${r.n}${o.charm||t==='skull'?'':` <i>· BASE ${d.v}</i>`}</div><div class="ds">${hl(d.d)}</div>${ex?`<div class="ex">${ex}</div>`:''}</div></div>`;if(o.charm&&run&&run.charms.includes(o.charm)&&(SCREEN==='shop'||(SCREEN==='game'&&run.phase==='idle'&&!busy))){const val=sellVal(o.charm);const b=el('button','btn red sellb',`SELL FOR ${img('ticket','px ic')}${val}`);b.onclick=e=>{e.stopPropagation();if(!b.dataset.sure){b.dataset.sure=1;b.innerHTML=`TAP AGAIN TO SELL · ${img('ticket','px ic')}${val}`;S.ui();return}sellCharm(o.charm);ov.classList.remove('on')};ov.querySelector('.info>div:last-child').appendChild(b)}
+ ov.classList.add('on');S.ui();ov.onclick=()=>ov.classList.remove('on')}
+const sellVal=id=>Math.max(1,Math.floor(CHARM[id].c/2));
+function sellCharm(id){const i=run.charms.indexOf(id);if(i<0)return;const val=sellVal(id);const slot=$(`.cslot[data-c="${id}"]`);const p=slot?center(slot):null;run.charms.splice(i,1);run.tickets+=val;run.st.sold=(run.st.sold||0)+1;S.buy();vib(20);
+ if(p){burst(p.x,p.y,{n:20,colors:['#c27bff','#ffd23f','#fff8ec'],sp:5});floatText(p.x,p.y,'+'+val+' TICKET'+(val>1?'S':''),'tk')}
+ save();if(SCREEN==='shop'){renderShop();bump($('.tixbig'));typer($('#sSay'),pick(['Back on the shelf it goes. Thank you, dear.','Trading up? Smart cookie.','I\'ll find it a good home.']),'nana')}else hud()}
 $('#reelWin')?.addEventListener('click',()=>{});
 let bagMode='view',bagSel=null,bagCb=null;
 function openBag(mode,over){bagMode=mode;bagSel=null;const ov=$('#bag');ov.style.zIndex=over?50:40;$('#bgT').textContent=mode==='remove'?'REMOVE A SYMBOL':`YOUR BAG · ${run.bag.length}`;
