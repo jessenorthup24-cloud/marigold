@@ -400,6 +400,7 @@ b,strong{font-weight:900}
 .ft.s4{font-size:24px;color:#ff9cc0}
 .ft.fx{font-family:var(--fu);font-weight:900;font-size:15px;letter-spacing:.05em;color:#fff}
 .ft.bad{font-family:var(--fu);font-weight:900;font-size:15px;color:#ff8a9a}
+.ft.mlt{font-family:var(--fu);font-weight:900;font-size:16px;color:#ff6b7e;letter-spacing:.04em}
 .ft.tk{font-family:var(--fu);font-weight:900;font-size:16px;color:#ffb627}
 @keyframes ft{0%{transform:translate(-50%,-30%) scale(.4);opacity:0}20%{transform:translate(-50%,-80%) scale(1.25);opacity:1}100%{transform:translate(-50%,-190%) scale(1);opacity:0}}
 .bigt{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);text-align:center;font-family:var(--fp);font-size:30px;line-height:1.2;color:#ffe58a;white-space:nowrap;text-shadow:0 4px 0 #7a2e08,3px 0 0 var(--out),-3px 0 0 var(--out),0 -3px 0 var(--out),0 7px 0 var(--out),0 0 30px rgba(255,190,60,.8);animation:bigt 1.5s cubic-bezier(.2,1.4,.3,1) forwards}
@@ -956,6 +957,7 @@ const S={
  flip(){noise(.12,{v:.12,f:3000,f2:1200,q:1});tone(660,.06,{type:'triangle',v:.07,at:.05})},
  rev(r){if(r==='C')tone(784,.15,{type:'triangle',v:.1});else if(r==='U')[0,4,7].forEach((s,j)=>tone(st(659,s),.18,{type:'triangle',v:.11,at:j*.06}));else if(r==='R'){[0,4,7,12,16].forEach((s,j)=>tone(st(587,s),.22,{type:'triangle',v:.12,at:j*.06}));noise(.5,{v:.05,f:8000,q:.5,at:.2})}else{S.big()}},
  holo(){[0,7,12,19,24].forEach((s,j)=>tone(st(1046,s),.3,{type:'sine',v:.07,at:.1+j*.05}));noise(.8,{v:.06,f:9000,q:.4})},
+ multAdd(m){const f=st(330,Math.min(24,Math.round(Math.log2(m+1)*6)));tone(f,.12,{type:'sawtooth',v:.05});tone(f*1.5,.1,{type:'square',v:.04,at:.04})},
  slam(t){const k=clamp(Math.log10(t+1),0,4);tone(90,.35,{type:'sine',v:.5,slide:.45});noise(.18,{v:.18+k*.05,f:1200,q:.7,type:'lowpass'});[0,4,7,12,16].slice(0,2+Math.round(k)).forEach((x,j)=>tone(st(392+k*60,x),.22,{v:.06,at:.04+j*.045}))},
  golden(){[0,4,7,12,16,19,24,28].forEach((x,j)=>tone(st(523,x),.3,{type:'triangle',v:.09,at:j*.05}));noise(1,{v:.07,f:9000,q:.4,at:.2})},
  tease(){[0,3,7].forEach((x,j)=>tone(st(659,x),.12,{type:'triangle',v:.07,at:j*.07}))},
@@ -1145,8 +1147,8 @@ chick:{n:'Chick',r:'U',v:1,d:'15% chance to grow into a Hen.'},
 honey:{n:'Honey',r:'U',v:3,d:'Worth 3. Bees make it worth more.'},
 chest:{n:'Chest',r:'U',v:1,d:'An adjacent Key opens it for +25.'},
 dice:{n:'Dice',r:'U',v:0,d:'Rolls 1 to 6 every pull.'},
-seven:{n:'Seven',r:'U',v:2,d:'Lines of Sevens pay ×7, ×10 or ×20!'},
-star:{n:'Star',r:'U',v:1,d:'Adjacent symbols give +1.'},
+seven:{n:'Seven',r:'U',v:2,d:'+1 Mult. A line of Sevens gives ×2, ×3 or ×5 Mult!'},
+star:{n:'Star',r:'U',v:1,d:'+1 Mult.'},
 horseshoe:{n:'Horseshoe',r:'U',v:1,d:'Knocks adjacent Jams loose before they count, +5 each.'},
 magnet:{n:'Magnet',r:'U',v:1,d:'Adjacent Coins ×3.'},
 bomb:{n:'Bomb',r:'U',v:0,d:'30% chance to explode: destroys itself and adjacent symbols, +4 each.'},
@@ -1170,15 +1172,15 @@ lucky_penny:{n:'Lucky Penny',c:3,d:'Coins give +2.',s:'c_penny'},
 golden_cherry:{n:'Golden Cherry',c:3,d:'Fruit give +1.',s:'c_gcherry'},
 cat_collar:{n:'Cat Collar',c:3,d:'Cats and Mice give +3.',s:'c_collar'},
 royal_jelly:{n:'Royal Jelly',c:4,d:'Bees, Flowers and Honey give +2.',s:'c_jelly'},
-lucky_pin:{n:'Lucky 7 Pin',c:4,d:'Sevens give +5.',s:'c_pin'},
+lucky_pin:{n:'Lucky 7 Pin',c:4,d:'Sevens give +1 more Mult.',s:'c_pin'},
 loaded_dice:{n:'Loaded Dice',c:3,d:'Dice roll twice and keep the higher.',s:'c_ldice'},
-spirit_level:{n:'Spirit Level',c:5,d:'Every line multiplier +1.',s:'c_level'},
+spirit_level:{n:'Spirit Level',c:5,d:'Every line gives +1 more Mult.',s:'c_level'},
 button_jar:{n:'Button Jar',c:4,d:'After rent, earn 20% interest on leftover coins.',s:'c_jar'},
 rabbit_foot:{n:"Rabbit's Foot",c:4,d:'Blocks the first Jam-up each night.',s:'c_foot'},
 salt:{n:'Oil Can',c:4,d:'Jams appear 40% less often.',s:'c_salt'},
 feather:{n:'Crow Feather',c:3,d:'Jams on the board give +4 each.',s:'c_feather'},
 snake_eyes:{n:'Snake Eyes',c:4,d:'Exactly 2 Jams on the board: +30.',s:'c_snake'},
-hourglass:{n:'Hourglass',c:5,d:'The first pull of each night pays ×3.',s:'c_hour'},
+hourglass:{n:'Hourglass',c:5,d:'The first pull of each night: ×3 Mult.',s:'c_hour'},
 locket:{n:'Clover Locket',c:4,d:'Luck +4.',s:'c_locket'},
 spare_lever:{n:'Spare Lever',c:6,d:'+1 pull every night.',s:'c_lever'},
 ticket_punch:{n:'Ticket Punch',c:3,d:'+2 Tickets after each rent.',s:'c_punch'},
@@ -1193,7 +1195,7 @@ const ACH=[
 ['sevens','Lucky Sevens','Score a line of Sevens.','seven','P'],
 ['lines3','Triple Threat','Score 3 lines in a single pull.','c_level','P'],
 ['wildline','Over the Rainbow','Score a line that uses a Rainbow.','rainbow','P'],
-['mult8','Supercharged','Make one symbol score ×8 or more.','moon','P'],
+['mult8','Supercharged','Reach 10 Mult in one pull.','moon','P'],
 ['big100','Big Pull','Win 100+ coins in one pull.','diamond','P'],
 ['big500','Huge Pull','Win 500+ coins in one pull.','crown','P'],
 ['big1000','Marigold Jackpot','Win 1,000+ coins in one pull.','pot','P'],
@@ -1251,15 +1253,15 @@ const ACH=[
 ['album_all',"Nana's Pride",'Complete the whole album.','marigold','A'],
 ];
 const ACH_CAT={P:'Pulls',S:'Symbol combos',R:'Runs',A:"Nana's Album"};
-const NIGHTS=[{rent:25,pulls:5},{rent:60,pulls:5},{rent:140,pulls:6},{rent:250,pulls:6},{rent:425,pulls:7},{rent:650,pulls:7},{rent:777,pulls:7}];
+const NIGHTS=[{rent:25,pulls:5},{rent:80,pulls:5},{rent:245,pulls:6},{rent:510,pulls:6},{rent:860,pulls:7},{rent:1330,pulls:7},{rent:1777,pulls:7}];
 const DAYS=['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'];
 const START=['coin','coin','cherry','cherry','bell','clover'];
-function nightInfo(n){let o;const C=(typeof CH!=='undefined'&&run)?CH[run.ch||0]:{mul:1,final:777};if(n<7)o={rent:Math.round(NIGHTS[n-1].rent*(1+(C.mul-1)*n/7)/5)*5,pulls:NIGHTS[n-1].pulls};else if(n===7)o={rent:C.final,pulls:NIGHTS[6].pulls};else{let rent=C.final;for(let i=8;i<=n;i++)rent=Math.round(rent*1.45/5)*5;o={rent,pulls:8}}if(typeof luckyHas==='function'&&luckyHas('f:corvus'))return {rent:Math.round(o.rent*(luckyLv('f:corvus')>=3?.8:.9)/5)*5,pulls:o.pulls};return o}
+function nightInfo(n){let o;const C=(typeof CH!=='undefined'&&run)?CH[run.ch||0]:{mul:1,final:1777};if(n<7)o={rent:Math.round(NIGHTS[n-1].rent*(1+(C.mul-1)*n/7)/5)*5,pulls:NIGHTS[n-1].pulls};else if(n===7)o={rent:C.final,pulls:NIGHTS[6].pulls};else{let rent=C.final;for(let i=8;i<=n;i++)rent=Math.round(rent*1.45/5)*5;o={rent,pulls:8}}if(typeof luckyHas==='function'&&luckyHas('f:corvus'))return {rent:Math.round(o.rent*(luckyLv('f:corvus')>=3?.8:.9)/5)*5,pulls:o.pulls};return o}
 const dayName=n=>n<=7?DAYS[n-1]:'OVERTIME';
 const CHAR={corvus:{name:'MR. CORVUS',spr:'corvus'},nana:{name:'NANA RUE',spr:'nana'},nar:{name:'',spr:null},velvet:{name:'BARONESS VELVET',spr:'velvet'},bramble:{name:'SHERIFF BRAMBLE',spr:'bramble'},moth:{name:'PROFESSOR MOTH',spr:'moth'},croakley:{name:'COUNT CROAKLEY',spr:'croakley'},goose:{name:'CLERK GERTRUDE',spr:'goose'},bruno:{name:'CHEF BRUNO',spr:'bruno'},crowe:{name:'CORNELIUS CROWE',spr:'crowe'}};
 const NANA_SHOP=["Tickets for charms, sweetpea. Coins are for crows.","Your grandpa won my heart with a line of Sevens. Or I won his. Details!","Mind the Jams. Marigold's gears have been sticky since 1962.","Build a little engine, dear. Cats love milk, bees love flowers, keys love chests.","Don't look at me like that. Grandmas are allowed to shop.","One more night. I can feel the floorboards rooting for you.","Sunday's the big one. Whatever you do, keep pulling.","Still pulling? That's my grandchild."];
 const NIGHT_Q=['Drag the lever down, sweetpea. Marigold likes a firm hand.','Bigger rent tonight. Bigger dreams, too.','Wednesday already! Keep an eye out for Jams.','Halfway there. {v} is pacing on the porch. Let them pace.','Friday night! Lights up, lever down.','Saturday. If you\'ve built an engine, run it hot.','Sunday. The big one. You can do this.','Overtime! The rent never stops growing. Neither do we.'];
-const CORVUS_PAY=["Hm. Beginner's luck. It never lasts.","Paid in full. How... irritating.","You pull that lever like she did. Stubbornly.","Mind the Jams, little gambler. They get worse each night.","Two nights left. I've already measured the drapes.","Tomorrow: seven hundred seventy-seven. Not a feather less.","Cousin Crowe will be... displeased."];
+const CORVUS_PAY=["Hm. Beginner's luck. It never lasts.","Paid in full. How... irritating.","You pull that lever like she did. Stubbornly.","Mind the Jams, little gambler. They get worse each night.","Two nights left. I've already measured the drapes.","Tomorrow, the final sum. Not a feather less.","Cousin Crowe will be... displeased."];
 
 /* ================= RUN STATE ================= */
 let run=null, busy=false, SCREEN='title', lastL=null, lastRes=null, colShown=[[],[],[],[],[]];
@@ -1274,7 +1276,7 @@ function hexP(){if(run.golden)return 0;if(run.night===1&&run.pullOfNight<2)retur
 function hexChance(){const p=hexP(),q=1-p,n=20;let s=0;for(let k=0;k<3;k++){s+=comb(n,k)*Math.pow(p,k)*Math.pow(q,n-k)}return 1-s}
 function comb(n,k){let r=1;for(let i=0;i<k;i++)r=r*(n-i)/(i+1);return r}
 const fmt=n=>Number(n).toLocaleString('en-US');
-const KW=['Cherry','Cherries','Lemon','Fruit','Clover','Bells?','Cats?','Milk','Mice','Mouse','Cheese','Eggs?','Chicks?','Hens?','Bees?','Flowers?','Honey','Keys?','Chests?','Dice','Sevens?','Stars?','Horseshoes?','Magnets?','Bombs?','Coins?','Diamonds?','Moons?','Rainbows?','Skulls?','Jams?','JAM','Hex','Tickets?','Luck','Rare','Legendary','Wild','lines?'];
+const KW=['Mult','Base','Cherry','Cherries','Lemon','Fruit','Clover','Bells?','Cats?','Milk','Mice','Mouse','Cheese','Eggs?','Chicks?','Hens?','Bees?','Flowers?','Honey','Keys?','Chests?','Dice','Sevens?','Stars?','Horseshoes?','Magnets?','Bombs?','Coins?','Diamonds?','Moons?','Rainbows?','Skulls?','Jams?','JAM','Hex','Tickets?','Luck','Rare','Legendary','Wild','lines?'];
 const KWRE=new RegExp('\\b('+KW.join('|')+')\\b','g');
 function hl(t){return t.replace(KWRE,'\u0001$1\u0002').replace(/([+×]\d+%?|\b\d+%|\b\d+\b)/g,'<b class="kn">$1</b>').replace(/\u0001/g,'<b class="kw">').replace(/\u0002/g,'</b>')}
 const fmtPct=x=>x<=0?'0%':x<.1?(x*100).toFixed(1)+'%':Math.round(x*100)+'%';
@@ -1318,7 +1320,7 @@ function evaluate(L){
  const sym=j=>live(j)&&C[j].t!=='skull';
  C.forEach(c=>{if(!live(c.i))return;
   if(c.t==='lemon')ADJ[c.i].forEach(j=>{if(live(j)&&FRUIT.has(C[j].t))C[j].add+=1});
-  if(c.t==='star'||c.t==='clover4')ADJ[c.i].forEach(j=>{if(sym(j))C[j].add+=1})});
+  if(c.t==='clover4')ADJ[c.i].forEach(j=>{if(sym(j))C[j].add+=1})});
  C.forEach(c=>{if(!live(c.i))return;
   if(c.t==='melon')ADJ[c.i].forEach(j=>{if(live(j)&&FRUIT.has(C[j].t))C[j].mult*=2});
   if(c.t==='bee')ADJ[c.i].forEach(j=>{if(is(j,'flower'))C[j].mult*=2;if(is(j,'honey'))C[j].mult*=3});
@@ -1329,12 +1331,12 @@ function evaluate(L){
  if(hasRule('wanted')&&run.wanted)C.forEach(c=>{if(is(c.i,run.wanted))c.mult*=3});
  C.forEach(c=>{if(live(c.i)&&c.t!=='skull'){const lm=luckyMult(c.t);if(lm>1)c.mult*=lm}});
  const scan=idx=>{let s=0;while(s<idx.length){let t=null,e=s;while(e<idx.length&&sym(idx[e])){const ct=C[idx[e]].t;if(!SYM[ct].wild){if(t===null)t=ct;else if(ct!==t)break}e++}
-  if(e-s>=3){const cells=idx.slice(s,e),n=cells.length,tt=t||'rainbow';let m=tt==='seven'?[0,0,0,7,10,20][n]:[0,0,0,2,3,5][n];if(H('spirit_level'))m+=1;if(luckyHas('f:bruno'))m+=luckyLv('f:bruno')>=3?2:1;cells.forEach(j=>C[j].lmult*=m);res.lines.push({cells,t:tt,m,n});s=e}else s++}};
+  if(e-s>=3){const cells=idx.slice(s,e),n=cells.length,tt=t||'rainbow';const bonus=(H('spirit_level')?1:0)+(luckyHas('f:bruno')?(luckyLv('f:bruno')>=3?2:1):0);const ln=tt==='seven'?{add:bonus,x:[0,0,0,2,3,5][n]}:{add:[0,0,0,1,2,3][n]+bonus,x:1};res.lines.push({cells,t:tt,n,add:ln.add,x:ln.x});s=e}else s++}};
  for(let r=0;r<4;r++)scan([0,1,2,3,4].map(c=>r*5+c));for(let c=0;c<5;c++)scan([0,1,2,3].map(r=>r*5+c));
  if(res.lines.length)res.ach.push('first_line');if(res.lines.length>=3)res.ach.push('lines3');if(res.lines.some(l=>l.cells.some(j=>C[j].t==='rainbow')&&l.t!=='rainbow'))res.ach.push('wildline');
  if(C.filter(c=>c.t==='skull').length>=4)res.ach.push('skulls4');if(res.fx.filter(f=>f.k==='smash').length>=3)res.ach.push('smash3');if(res.lines.some(l=>l.n===5))res.ach.push('line5');if(res.lines.some(l=>l.t==='seven'))res.ach.push('sevens');
  const nailC=run.trick==='nail'?run.trickCol:hasRule('rigged')&&run.rigCol!=null?run.rigCol:-1;res.zeroed=[];
- let sum=0;C.forEach(c=>{if(!c.t)return;let v=0;if(!c.gone)v=Math.round((c.base+c.add)*c.mult*c.lmult);v+=c.bonus;if(v>0&&(c.i%5===nailC||(run.trick==='sour'&&FRUIT.has(c.t))||(run.trick==='tarnish'&&c.t==='coin'))){res.zeroed.push(c.i);v=0}c.val=v;sum+=v;if(!c.gone&&c.t!=='skull'&&c.mult*c.lmult>=8)res.ach.push('mult8');if(c.t==='honey'&&v>=15)res.ach.push('honey');if(c.t==='coin'&&v>=10)res.ach.push('magnet');if(c.t==='pot'&&!c.gone&&c.mult>=5)res.ach.push('potgold')});
+ let sum=0;C.forEach(c=>{if(!c.t)return;let v=0;if(!c.gone)v=Math.round((c.base+c.add)*c.mult*c.lmult);v+=c.bonus;if(v>0&&(c.i%5===nailC||(run.trick==='sour'&&FRUIT.has(c.t))||(run.trick==='tarnish'&&c.t==='coin'))){res.zeroed.push(c.i);v=0}c.val=v;sum+=v;if(c.t==='honey'&&v>=15)res.ach.push('honey');if(c.t==='coin'&&v>=10)res.ach.push('magnet');if(c.t==='pot'&&!c.gone&&c.mult>=5)res.ach.push('potgold')});
  C.forEach(c=>{if(live(c.i)&&c.t==='ticket')res.tickets+=1+(luckyLv('s:ticket')>=3?2:luckyHas('s:ticket')?1:0)});
  const empties=C.filter(c=>!c.t).length;
  if(H('thimble')&&empties>0)res.globals.push({charm:'thimble',v:empties});
@@ -1342,9 +1344,14 @@ function evaluate(L){
  if(skulls===2&&H('snake_eyes')){res.globals.push({charm:'snake_eyes',v:30});res.ach.push('snake')}
  if(hasRule('rake')&&!run.golden){let best=null;C.forEach(c=>{if(c.val>0&&(!best||c.val>best.val))best=c});if(best){const rk=Math.ceil(best.val/2);res.raked={i:best.i,v:rk};sum-=rk;best.val-=rk}}
  if(hasRule('picky')){const cnt={};C.forEach(c=>{if(live(c.i)&&c.t!=='skull')cnt[c.t]=(cnt[c.t]||0)+1});C.forEach(c=>{if(c.val>0&&live(c.i)&&c.t!=='skull'&&!SYM[c.t].wild&&cnt[c.t]===1){sum-=c.val;c.val=0;res.zeroed.push(c.i)}})}
- let total=sum+res.globals.reduce((a,g)=>a+g.v,0);
- if(H('hourglass')&&run.pullOfNight===0){res.xmult=3;total*=3}
- if(run.golden){res.golden=true;total*=2}
+ const chips=sum+res.globals.reduce((a,g)=>a+g.v,0);
+ let M=1;const mev=[];const ok=c=>live(c.i)&&c.val>0&&!res.zeroed.includes(c.i);
+ C.forEach(c=>{if(!ok(c))return;let a=0;if(c.t==='seven')a=1+(H('lucky_pin')?1:0);if(c.t==='star')a=1;a+=luckyMAdd(c.t);if(a){M+=a;mev.push({k:'cell',i:c.i,add:a,m:M})}});
+ [...res.lines.filter(l=>l.t!=='seven'),...res.lines.filter(l=>l.t==='seven')].forEach(l=>{M=(M+l.add)*l.x;mev.push({k:'line',l,add:l.add,x:l.x,m:M})});
+ if(H('hourglass')&&run.pullOfNight===0){M*=3;res.xmult=3;mev.push({k:'charm',id:'hourglass',x:3,m:M})}
+ if(run.golden){res.golden=true;M*=2;mev.push({k:'golden',x:2,m:M})}
+ res.base=chips;res.mult=M;res.mev=mev;if(M>=10)res.ach.push('mult8');
+ let total=Math.round(chips*M);
  if(run.trick==='tax'&&total>0){res.tax=Math.floor(total*.2);total-=res.tax}
  if(skulls>=3&&luckyHas('f:crowe')&&run.pullOfNight<(luckyLv('f:crowe')>=3?2:1)){res.graced=true}else if(skulls>=3){if(H('rabbit_foot')&&!run.footUsed){res.blocked=true;res.ach.push('blocked')}else{res.hex=true;total=0;res.tickets=0;res.ach.push('hexed')}}
  if(empties===0)res.ach.push('full_board');
@@ -1482,7 +1489,7 @@ function drawTray(coins){if(!TRAY.g)return;const n=coins<=0?0:Math.min(120,Math.
  let i=0,row=0;while(i<n&&row<6){const rw=W-10-row*26;if(rw<20)break;const cap=Math.max(1,Math.floor(rw/7));const slots=[...Array(cap).keys()].sort((a,b)=>Math.abs(a-(cap-1)/2)-Math.abs(b-(cap-1)/2));const y=H-sz-1-row*4.5;
   for(let j=0;j<cap&&i<n;j++,i++){const sx=slots[j];const x=(W-rw)/2+sx*(rw/cap)+(h01(i)-.5)*3;g.drawImage(cv,Math.round(x),Math.round(y+(h01(i+77)-.5)*2),sz,sz)}row++}}
 function trayPoint(){const t=$('#ctray');const c=center(t);return {x:c.x+(rnd()-.5)*c.w*.7,y:c.y}}
-function tally(base,mult,reset){$('#tBase').textContent=fmt(Math.round(base));$('#tMult').textContent=mult<10?(Math.round(mult*10)/10).toString():fmt(Math.round(mult));if(!reset){bump($('.tb.base'));if(mult>1.01)bump($('.tb.mult'))}}
+function tally(base,mult,reset){$('#tBase').textContent=fmt(Math.round(base));$('#tMult').textContent=fmt(Math.round(mult));if(!reset){bump($('.tb.base'));if(mult>1.01)bump($('.tb.mult'))}}
 function streakSet(k){const e=$('#streak');if(k<3){e.classList.remove('on','hot','fire');$('#machine').style.setProperty('--heat',0);return}e.textContent='STREAK ×'+k;e.classList.add('on');e.classList.toggle('hot',k>=8&&k<14);e.classList.toggle('fire',k>=14);bump(e);$('#machine').style.setProperty('--heat',Math.min(1,(k-2)/14).toFixed(2))}
 function renderJP(pop){const P=$('#jpP');if(!P.children.length)for(let i=0;i<8;i++)P.appendChild(el('i'));const n=run?run.jp||0:0;[...P.children].forEach((e,i)=>{e.classList.toggle('on',i<n);if(pop&&i>=pop[0]&&i<pop[1]){e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')}});const full=run&&run.golden;$('#jp').classList.toggle('full',!!full);$('#jpL').textContent=full?'GOLDEN SPIN READY':'JACKPOT'}
 function trickBar(){const b=$('#trickBar');let h='';if(run){const r=run.rule;if(run.trick){const t=TRICKS[run.trick];h=`${img('corvus')}<div><b>${t.n.toUpperCase()}</b> <span>· ${t.s}</span></div>`}
@@ -1493,7 +1500,7 @@ function trickBar(){const b=$('#trickBar');let h='';if(run){const r=run.rule;if(
   else if(r==='redtape')h=`${img('goose')}<div><b>RED TAPE</b> <span>· +2 paperwork in your bag nightly</span></div>`;
   else if(r==='picky')h=`${img('bruno')}<div><b>PICKY PALATE</b> <span>· loners pay nothing</span></div>`}
  if(h){b.innerHTML=h;b.classList.add('on')}else b.classList.remove('on');$$('#reelWin .col').forEach((c,i)=>c.classList.toggle('nailed',!!run&&((run.trick==='nail'&&run.trickCol===i)||(hasRule('rigged')&&run.rigCol===i))))}
-async function slam(total){const t=$('#tally');t.classList.remove('slam');void t.offsetWidth;t.classList.add('slam');S.slam(total);await sleep(FAST?120:230);const led=$('#led');led.classList.remove('pop');void led.offsetWidth;led.classList.add('pop');shake($('#machine'),clamp(Math.log10(total+1)*3,2,10),300);flash('#fff3a0',clamp(total/500,.06,.3),260);const p=center(led);burst(p.x,p.y,{n:clamp(Math.round(total/12),8,40),sp:5});vib(clamp(Math.round(total/25),8,50));await sleep(FAST?150:320)}
+async function slam(total){const t=$('#tally');floatText(center(t).x,center(t).y-26,'= '+fmt(total),'s3');t.classList.remove('slam');void t.offsetWidth;t.classList.add('slam');S.slam(total);await sleep(FAST?120:230);const led=$('#led');led.classList.remove('pop');void led.offsetWidth;led.classList.add('pop');shake($('#machine'),clamp(Math.log10(total+1)*3,2,10),300);flash('#fff3a0',clamp(total/500,.06,.3),260);const p=center(led);burst(p.x,p.y,{n:clamp(Math.round(total/12),8,40),sp:5});vib(clamp(Math.round(total/25),8,50));await sleep(FAST?150:320)}
 
 /* ================= SCORING ================= */
 function badge(e,txt,cls){const b=el('div','badge '+cls,txt);e.appendChild(b)}
@@ -1508,24 +1515,29 @@ async function animateScore(L,res){const C=res.cells;FAST=false;const stage=$('#
   if(f.k==='open'){S.open();vib(20);const b=cellEl(f.to[0]);b.classList.add('gone');a.classList.add('gone');const c=center(b);burst(c.x,c.y,{n:28,colors:['#ffd23f','#fff3a0','#ff8a2b'],sp:6});ring(c.x,c.y);sprBurst(c.x,c.y,'coin',8,6);floatAt(b,'TREASURE!','fx')}
   if(f.k==='boom'){S.boom();vib([30,20,40]);a.classList.add('gone');const c=center(a);flash('#ffb060',.5,350);shake($('#machine'),12,420);burst(c.x,c.y,{n:40,colors:['#ff8a2b','#ffd23f','#4a4f66','#fff8ec'],sp:8,size:5});ring(c.x,c.y,'#ff8a2b',90);f.to.forEach(j=>cellEl(j).classList.add('gone'));floatAt(a,'KABOOM!','s3')}
   await wait(260)}
- for(const ln of res.lines){const box=lineBox(ln.cells);const g=el('div','lineglow'+(ln.t==='seven'?' seven':''),`<b>${ln.t==='seven'?'777 ':'LINE '}×${ln.m}</b>`);Object.assign(g.style,{left:box.l+'px',top:box.t+'px',width:box.w+'px',height:box.h+'px'});$('#reelWin').appendChild(g);ln.cells.forEach(j=>cellEl(j).classList.add('lit'));S.line(Math.min(ln.n-3+(ln.t==='seven'?2:0),4));vib(25);const c=center(g);burst(c.x,c.y,{n:20,sp:5});if(ln.n>=5||ln.t==='seven'){flash('#fff3a0',.35);shake($('#machine'),6)}await wait(480)}
  if(res.hex){await hexSeq(res);$$('#reelWin .lineglow').forEach(g=>g.remove());$('#led').classList.remove('scoring');stage.removeEventListener('pointerdown',skip);FAST=false;return}
  if(res.blocked){flashCharm('rabbit_foot');S.block();bigText('BLOCKED!','blue','Rabbit\'s Foot');flash('#a8fbff',.4);C.forEach(c=>{if(c.t==='skull'&&!c.gone)cellEl(c.i).classList.add('dim')});await wait(900)}
- const g0=run.jp||0,gg=jpGain(res);if(gg&&!run.golden){const g1=Math.min(8,g0+gg);for(let i=g0;i<g1;i++){run.jp=i+1;renderJP([i,i+1]);S.jp(i);await wait(110)}run.jp=g0;if(g1>=8){S.golden();bigText('JACKPOT!','','Next pull is a Golden Spin',true);vib([20,20,40]);await wait(1300)}}
  if(res.raked){const e=cellEl(res.raked.i);e.classList.add('dim');bump(e,'wig');S.villain('velvet');floatAt(e,'RAKED −'+fmt(res.raked.v),'bad');vib(15);await wait(650)}
  if(res.graced){S.block();bigText('SPARED!','blue','Cornelius looks away');await wait(900)}
  if(res.zeroed&&res.zeroed.length){res.zeroed.forEach(i=>cellEl(i).classList.add('dim'));const e=cellEl(res.zeroed[0]);floatAt(e,hasRule('rigged')&&res.zeroed.some(i=>i%5===run.rigCol)?'STUCK':hasRule('picky')?'LONER':run.trick==='nail'?'BOARDED UP':run.trick==='sour'?'SOUR!':'TARNISHED','bad');await wait(380)}
- let k=0,acc=0,base=0;const startCoins=run.coins;disp.target=startCoins;tally(0,1,true);tip('Tap anywhere to speed up');
- for(const c of C){if(!c.t||c.val<=0)continue;const e=cellEl(c.i);bump(e,'pop');const m=c.mult*c.lmult;if(m>1)badge(e,'×'+m,'m');const cls=c.val>=100?'s4':c.val>=25?'s3':c.val>=8?'s2':'';floatAt(e,'+'+fmt(c.val),cls);badge(e,c.val,'v'+(c.val>=25?' mega':c.val>=8?' hi':''));S.score(k);if(!FAST)S.sym(c.t);if(c.val>=8)vib(8);
-  coinsFrom(e,clamp(Math.ceil(c.val/6),1,6));const raw=c.gone?c.bonus:(c.base+c.add+c.bonus);base+=raw;acc+=c.val;tally(base,acc/Math.max(1,base));disp.winT=acc;disp.target=startCoins+acc;k++;streakSet(k);
+ let k=0,base=0,mult=1;const startCoins=run.coins;disp.target=startCoins;tally(0,1,true);tip('Tap anywhere to speed up');
+ const cellM={};(res.mev||[]).forEach(e=>{if(e.k==='cell')cellM[e.i]=e});
+ for(const c of C){if(!c.t||c.val<=0)continue;const e=cellEl(c.i);bump(e,'pop');if(c.mult>1)badge(e,'×'+c.mult,'m');const cls=c.val>=100?'s4':c.val>=25?'s3':c.val>=8?'s2':'';floatAt(e,'+'+fmt(c.val),cls);badge(e,c.val,'v'+(c.val>=25?' mega':c.val>=8?' hi':''));S.score(k);if(!FAST)S.sym(c.t);if(c.val>=8)vib(8);
+  coinsFrom(e,clamp(Math.ceil(c.val/6),1,6));base+=c.val;k++;streakSet(k);tally(base,mult);
   if(c.val>=25){const p=center(e);burst(p.x,p.y,{n:14,sp:4})}
+  const cm=cellM[c.i];if(cm){await wait(120);mult=cm.m;tally(base,mult);const p=center(e);floatText(p.x,p.y-14,'+'+cm.add+' MULT','mlt');S.multAdd(mult);vib(10)}
   await wait(Math.max(45,150-k*8))}
- for(const gl of res.globals){flashCharm(gl.charm);const s=$(`.cslot[data-c="${gl.charm}"]`);if(s){floatAt(s,'+'+gl.v,'s2');coinsFrom(s,3)}S.score(k++);streakSet(k);base+=gl.v;acc+=gl.v;tally(base,acc/Math.max(1,base));disp.winT=acc;disp.target=startCoins+acc;await wait(300)}
- if(res.xmult>1){flashCharm('hourglass');bigText('×'+res.xmult,'','Hourglass');S.line(3);acc*=res.xmult;tally(base,acc/Math.max(1,base));disp.winT=acc;disp.target=startCoins+acc;await wait(800)}
- if(res.golden){bigText('×2','','Golden Spin',true);S.golden();acc*=2;tally(base,acc/Math.max(1,base));disp.winT=acc;disp.target=startCoins+acc;await wait(900)}
- if(res.tax){S.tax();const l=$('#led');floatAt(l,'−'+fmt(res.tax)+' CROW TAX','bad');acc-=res.tax;disp.winT=acc;disp.target=startCoins+acc;await wait(600)}
+ for(const gl of res.globals){flashCharm(gl.charm);const s=$(`.cslot[data-c="${gl.charm}"]`);if(s){floatAt(s,'+'+gl.v,'s2');coinsFrom(s,3)}S.score(k++);streakSet(k);base+=gl.v;tally(base,mult);await wait(300)}
+ for(const ev of (res.mev||[])){
+  if(ev.k==='line'){const ln=ev.l;const box=lineBox(ln.cells);const lbl=ev.x>1?(ev.add?`+${ev.add} ×${ev.x} MULT`:`×${ev.x} MULT`):`+${ev.add} MULT`;const g=el('div','lineglow'+(ln.t==='seven'?' seven':''),`<b>${lbl}</b>`);Object.assign(g.style,{left:box.l+'px',top:box.t+'px',width:box.w+'px',height:box.h+'px'});$('#reelWin').appendChild(g);ln.cells.forEach(j=>cellEl(j).classList.add('lit'));S.line(Math.min(ln.n-3+(ln.t==='seven'?2:0),4));vib(25);const c=center(g);burst(c.x,c.y,{n:20,sp:5});if(ln.n>=5||ln.t==='seven'){flash('#fff3a0',.35);shake($('#machine'),6)}mult=ev.m;tally(base,mult);S.multAdd(mult);await wait(520)}
+  if(ev.k==='charm'){flashCharm(ev.id);bigText('×'+ev.x+' MULT','','Hourglass');S.line(3);mult=ev.m;tally(base,mult);await wait(800)}
+  if(ev.k==='golden'){bigText('×2 MULT','','Golden Spin',true);S.golden();mult=ev.m;tally(base,mult);await wait(900)}}
+ const g0=run.jp||0,gg=jpGain(res);if(gg&&!run.golden){const g1=Math.min(8,g0+gg);for(let i=g0;i<g1;i++){run.jp=i+1;renderJP([i,i+1]);S.jp(i);await wait(110)}run.jp=g0;if(g1>=8){S.golden();bigText('JACKPOT!','','Next pull is a Golden Spin',true);vib([20,20,40]);await wait(1300)}}
+ let acc=Math.round(base*mult);
+ if(res.tax){acc=res.total}
  acc=res.total;disp.winT=acc;disp.target=startCoins+acc;
  if(acc>0&&k>0)await slam(acc);
+ if(res.tax){S.tax();floatAt($('#led'),'−'+fmt(res.tax)+' CROW TAX','bad');await wait(600)}
  streakSet(0);
  if(res.tickets){const a=center($('#reelWin')),b=center($('#hTix'));C.forEach(c=>{if(c.t==='ticket'&&!c.gone){const p=center(cellEl(c.i));fly('ticket',p.x,p.y,b.x,b.y,{dur:36,sc:2,cb:()=>{S.tix();$('#hTix').textContent=run.tickets}})}});floatText(a.x,a.y+30,'+'+res.tickets+' TICKET'+(res.tickets>1?'S':''),'tk');await wait(300)}
  const rent=nightInfo(run.night).rent;
@@ -1558,7 +1570,7 @@ async function doPull(pre){try{
  if(run.pullsLeft<=0){busy=false;await rentScene();return}
  run.phase='idle';save();busy=false;idleHint();
  }catch(err){console.error(err);busy=false;if(run)run.phase='idle'}}
-const TIPS=['Tap any symbol on the reels to read what it does.','Lines count both ways: rows <b>and</b> columns.','A lean bag lands its best symbols more often. Skipping is allowed!','Up to <b>20</b> symbols land each pull. Extras wait their turn.','Luck makes rare symbols show up in your picks.','Horseshoes knock Jams loose before they count.','Rainbows are wild: they fit into any line.','Leftover coins carry into the next night.'];let tipK=0;
+const TIPS=['Tap any symbol on the reels to read what it does.','Lines add <b>MULT</b>, and they count both ways: rows <b>and</b> columns.','A lean bag lands its best symbols more often. Skipping is allowed!','Up to <b>20</b> symbols land each pull. Extras wait their turn.','Luck makes rare symbols show up in your picks.','Horseshoes knock Jams loose before they count.','Rainbows are wild: they fit into any line.','Leftover coins carry into the next night.'];let tipK=0;
 function tip(t){const e=$('#tip');e.style.opacity=0;setTimeout(()=>{e.innerHTML=t;e.style.opacity=1},250)}
 function lastPullTip(res){if(res.hex)return tip('Jammed! Three Jams stopped the whole pull.');const n=res.lines.length;tip(`Last pull <b>+${res.total}</b>${n?` · ${n} line${n>1?'s':''}`:''}${res.skulls?` · ${res.skulls} Jam${res.skulls>1?'s':''}`:''}`)}
 let hintT=null;function idleHint(){clearTimeout(hintT);$('#lever').classList.toggle('ready',canPull());const h=$('#lvHint');h.style.display='none';hintT=setTimeout(()=>{if(canPull())h.style.display=''},run&&run.pulls<3?600:7000)}
@@ -1573,7 +1585,7 @@ function showPick(offer){return new Promise(res=>{const ov=$('#pick'),box=$('#pC
  ov.classList.add('on');setTimeout(()=>S.ui(),50)})}
 
 /* ================= INFO / BAG / ACH / HOW / MENU ================= */
-function showInfo(o){const ov=$('#info');let t,d,r,ex='';if(o.charm){d=CHARM[o.charm];r=RAR.H;t=d.s}else if(o.t){t=o.t;d=SYM[t];r=RAR[d.r];if(o.val!=null)ex=`Last pull: +${o.val}`}else{ov.innerHTML='';return}
+function showInfo(o){const ov=$('#info');let t,d,r,ex='';if(o.charm){d=CHARM[o.charm];r=RAR.H;t=d.s}else if(o.t){t=o.t;d=SYM[t];r=RAR[d.r];if(o.val!=null)ex=`Last pull: +${o.val} base`}else{ov.innerHTML='';return}
  if(!o.charm&&run&&t!=='skull'){const n=run.bag.filter(b=>b.t===t).length;ex=(ex?ex+' · ':'')+`In your bag: ${n}`}
  ov.innerHTML=`<div class="info" style="--rc:${r.c};--rcg:${r.g}"><div class="x">✕</div><div class="art">${img(t)}</div><div><div class="nm">${d.n}</div><div class="rar">${r.n}${o.charm||t==='skull'?'':` <i>· BASE ${d.v}</i>`}</div><div class="ds">${hl(d.d)}</div>${ex?`<div class="ex">${ex}</div>`:''}</div></div>`;if(o.charm&&run&&run.charms.includes(o.charm)&&(SCREEN==='shop'||(SCREEN==='game'&&run.phase==='idle'&&!busy))){const val=sellVal(o.charm);const b=el('button','btn red sellb',`SELL FOR ${img('ticket','px ic')}${val}`);b.onclick=e=>{e.stopPropagation();if(!b.dataset.sure){b.dataset.sure=1;b.innerHTML=`TAP AGAIN TO SELL · ${img('ticket','px ic')}${val}`;S.ui();return}sellCharm(o.charm);ov.classList.remove('on')};ov.querySelector('.info>div:last-child').appendChild(b)}
  ov.classList.add('on');S.ui();ov.onclick=()=>ov.classList.remove('on')}
@@ -1591,7 +1603,7 @@ function bagFoot(k){const d=SYM[k],f=$('#bgF');if(bagMode==='remove'){f.innerHTM
 $('#bgX').onclick=()=>{S.ui();$('#bag').classList.remove('on')};
 function openAch(){const n=ACH.filter(a=>META.ach[a[0]]).length;$('#achT').textContent=`TROPHIES ${n}/${ACH.length}`;$('#achBar').style.width=(n/ACH.length*100)+'%';const l=$('#achList');l.innerHTML='';Object.keys(ACH_CAT).forEach(k=>{const list=ACH.filter(a=>a[4]===k);const got=list.filter(a=>META.ach[a[0]]).length;l.appendChild(el('div','ach-h',`<span>${ACH_CAT[k]}</span><b>${got}/${list.length}</b>`));list.forEach(a=>{const g=!!META.ach[a[0]];l.appendChild(el('div','ach'+(g?'':' lock'),`<div class="bd">${img(a[3])}</div><div><div class="t">${a[1]}</div><div class="d">${a[2]}</div></div>${g?'<div class="ck">✓</div>':''}`))})});$('#ach').classList.add('on')}
 $('#achX').onclick=()=>{S.ui();$('#ach').classList.remove('on')};
-function openHow(){const rows=[['c_lever','<b>Pull the lever.</b> Your symbols land at random on the 5×4 board.'],['cherry','<b>Symbols pay coins</b> and boost their neighbors. Tap any symbol to read it.'],['seven','<b>3+ of a kind in a row or column</b> is a LINE: ×2, ×3, even ×5!'],['clover','<b>After each pull, add a symbol</b> — or skip to keep your bag lean.'],['skull','<b>Three Jams at once and Marigold JAMS.</b> That pull pays nothing.'],['corvus','<b>When pulls run out, Mr. Corvus collects rent.</b> Come up short and he takes the house.'],['ticket','<b>Spend Tickets on Charms</b> at Nana\'s shop between nights.'],['c_level','<b>Lines fill the JACKPOT meter.</b> Fill it for a Golden Spin: double coins, no Jams.'],['c_feather','<b>Wednesday, Friday and Sunday</b>, Corvus plays a trick. Beat it for bonus Tickets.'],['pack','<b>Every run earns card packs</b>, win or lose. Fill Nana\'s Album!'],['star','<b>Duplicates upgrade cards: Holo, then Gold.</b> Holo cards become Lucky Cards that power up your runs. Later chapters need them!']];$('#howList').innerHTML=rows.map(r=>`<div class="r">${img(r[0])}<p>${r[1]}</p></div>`).join('');$('#how').classList.add('on')}
+function openHow(){const rows=[['c_lever','<b>Pull the lever.</b> Your symbols land at random on the 5×4 board.'],['cherry','<b>Symbols pay coins</b> and boost their neighbors. Tap any symbol to read it.'],['seven','<b>Symbols add to BASE. Lines add to MULT.</b> Each pull pays BASE × MULT, just like Balatro!'],['clover','<b>After each pull, add a symbol</b> — or skip to keep your bag lean.'],['skull','<b>Three Jams at once and Marigold JAMS.</b> That pull pays nothing.'],['corvus','<b>When pulls run out, Mr. Corvus collects rent.</b> Come up short and he takes the house.'],['ticket','<b>Spend Tickets on Charms</b> at Nana\'s shop between nights.'],['c_level','<b>Lines fill the JACKPOT meter.</b> Fill it for a Golden Spin: double coins, no Jams.'],['c_feather','<b>Wednesday, Friday and Sunday</b>, Corvus plays a trick. Beat it for bonus Tickets.'],['pack','<b>Every run earns card packs</b>, win or lose. Fill Nana\'s Album!'],['star','<b>Duplicates upgrade cards: Holo, then Gold.</b> Holo cards become Lucky Cards that power up your runs. Later chapters need them!']];$('#howList').innerHTML=rows.map(r=>`<div class="r">${img(r[0])}<p>${r[1]}</p></div>`).join('');$('#how').classList.add('on')}
 $('#howX').onclick=()=>{S.ui();$('#how').classList.remove('on')};
 
 /* ================= DIALOG ================= */
@@ -1710,16 +1722,17 @@ const canUpgrade=canUp;
 const goldCount=()=>CARDS.filter(c=>META.album[c.id]&&META.album[c.id].g).length;
 const luckySlots=()=>Math.min(5,1+CH.filter((c,i)=>META.camp.cleared[i]).length);
 const collBonus=()=>Math.floor(albumCount()/10);
-const FOLKB={nana:['Start every run with 4 Tickets.','Start every run with 8 Tickets.','+4 Tickets','+8 Tickets'],corvus:['Every rent payment is 10% lower.','Every rent payment is 20% lower.','−10% rent','−20% rent'],marigold:['Start every run with the jackpot meter half full.','Start every run with the jackpot meter nearly full.','Jackpot ½','Jackpot ¾'],velvet:['Start every run with a Rainbow.','Start every run with 2 Rainbows.','+1 Rainbow','+2 Rainbows'],bramble:['Start every run with a Horseshoe.','Start every run with 2 Horseshoes.','+1 Horseshoe','+2 Horseshoes'],moth:['Luck +3 in every run.','Luck +6 in every run.','Luck +3','Luck +6'],croakley:['An extra pull on Monday night.','An extra pull on Monday and Tuesday.','+1 Mon pull','+1 Mon/Tue pull'],goose:['One free shop reroll every night.','Two free shop rerolls every night.','1 free reroll','2 free rerolls'],bruno:['Every line multiplier +1.','Every line multiplier +2.','Lines +1','Lines +2'],crowe:['Never jammed on the first pull of a night.','Never jammed on the first two pulls of a night.','Safe 1st pull','Safe 2 pulls']};
-function holoText(c,L){L=L||Math.max(2,lvl(c));const g=L>=3;if(c.kind==='SYMBOL'){if(c.key==='skull')return g?'Jams appear 35% less often.':'Jams appear 20% less often.';if(c.key==='ticket')return g?'Tickets give 2 extra Tickets.':'Tickets give 1 extra Ticket.';return `Every ${SYM[c.key].n} you land pays ×${g?3:2}.`}
+const FOLKB={nana:['Start every run with 4 Tickets.','Start every run with 8 Tickets.','+4 Tickets','+8 Tickets'],corvus:['Every rent payment is 10% lower.','Every rent payment is 20% lower.','−10% rent','−20% rent'],marigold:['Start every run with the jackpot meter half full.','Start every run with the jackpot meter nearly full.','Jackpot ½','Jackpot ¾'],velvet:['Start every run with a Rainbow.','Start every run with 2 Rainbows.','+1 Rainbow','+2 Rainbows'],bramble:['Start every run with a Horseshoe.','Start every run with 2 Horseshoes.','+1 Horseshoe','+2 Horseshoes'],moth:['Luck +3 in every run.','Luck +6 in every run.','Luck +3','Luck +6'],croakley:['An extra pull on Monday night.','An extra pull on Monday and Tuesday.','+1 Mon pull','+1 Mon/Tue pull'],goose:['One free shop reroll every night.','Two free shop rerolls every night.','1 free reroll','2 free rerolls'],bruno:['Every line gives +1 more Mult.','Every line gives +2 more Mult.','Lines +1 Mult','Lines +2 Mult'],crowe:['Never jammed on the first pull of a night.','Never jammed on the first two pulls of a night.','Safe 1st pull','Safe 2 pulls']};
+function holoText(c,L){L=L||Math.max(2,lvl(c));const g=L>=3;if(c.kind==='SYMBOL'){if(c.key==='skull')return g?'Jams appear 35% less often.':'Jams appear 20% less often.';if(c.key==='ticket')return g?'Tickets give 2 extra Tickets.':'Tickets give 1 extra Ticket.';return g?`Every ${SYM[c.key].n} you land gives +2 Mult and pays ×2 base.`:`Every ${SYM[c.key].n} you land gives +1 Mult.`}
  if(c.kind==='CHARM')return g?`Start every run with ${CHARM[c.key].n} equipped, plus 2 Tickets.`:`Start every run with ${CHARM[c.key].n} already equipped.`;
  return FOLKB[c.key][g?1:0]}
 const cardById=id=>CARDS.find(c=>c.id===id);
-function holoShort(c,L){L=L||Math.max(2,lvl(c));const g=L>=3;if(c.kind==='SYMBOL'){if(c.key==='skull')return g?'−35% Jams':'−20% Jams';if(c.key==='ticket')return g?'+2 Tickets each':'+1 Ticket each';return `${SYM[c.key].n} ×${g?3:2}`}if(c.kind==='CHARM')return g?'Equipped +2 Tix':'Starts equipped';return FOLKB[c.key][g?3:2]}
+function holoShort(c,L){L=L||Math.max(2,lvl(c));const g=L>=3;if(c.kind==='SYMBOL'){if(c.key==='skull')return g?'−35% Jams':'−20% Jams';if(c.key==='ticket')return g?'+2 Tickets each':'+1 Ticket each';return g?`+2 Mult, ×2`:`+1 Mult each`}if(c.kind==='CHARM')return g?'Equipped +2 Tix':'Starts equipped';return FOLKB[c.key][g?3:2]}
 function luckyCards(){return (run&&run.lucky||[]).map(cardById).filter(Boolean)}
 const luckyHas=id=>!!(run&&run.lucky&&run.lucky.includes(id));
 const luckyLv=id=>luckyHas(id)?((run.ll&&run.ll[id])||2):0;
-function luckyMult(t){let m=1;luckyCards().forEach(c=>{if(c.kind==='SYMBOL'&&c.key===t&&t!=='skull'&&t!=='ticket')m*=luckyLv(c.id)>=3?3:2});return m}
+function luckyMult(t){let m=1;luckyCards().forEach(c=>{if(c.kind==='SYMBOL'&&c.key===t&&t!=='skull'&&t!=='ticket'&&luckyLv(c.id)>=3)m*=2});return m}
+function luckyMAdd(t){let a=0;luckyCards().forEach(c=>{if(c.kind==='SYMBOL'&&c.key===t&&t!=='skull'&&t!=='ticket')a+=luckyLv(c.id)>=3?2:1});return a}
 function applyLucky(){if(!run)return;if(run.daily){run.lucky=[];return}run.lucky=(META.lucky||[]).filter(id=>{const c=cardById(id);return c&&lvl(c)>=2}).slice(0,luckySlots());run.ll={};run.lucky.forEach(id=>run.ll[id]=lvl(cardById(id)));
  luckyCards().forEach(c=>{if(c.kind==='CHARM'){if(!run.charms.includes(c.key)&&run.charms.length<6)run.charms.push(c.key);if(luckyLv(c.id)>=3)run.tickets+=2}});
  const g=id=>luckyLv(id)>=3;run.tickets+=collBonus();
@@ -1871,15 +1884,15 @@ if(window.__PWA__&&'serviceWorker' in navigator&&(location.protocol==='https:'||
 
 /* ================= CAMPAIGN ================= */
 const CH=[
-{id:'corvus',n:'Mr. Corvus',short:'Corvus',title:'The House on Larkspur Lane',stake:"Nana's house",ledger:'CORVUS & CROWE',rule:'tricks',ruleN:"Corvus's Tricks",ruleD:'Wednesday, Friday and Sunday, Corvus plays a dirty trick.',mul:1,final:777,
- intro:[['nar','Nana Rue lives in a crooked old house on Larkspur Lane, with a jar of buttons...'],['nar','...and Marigold, the 1931 slot machine humming in her parlor.'],['corvus','Corvus. Of Corvus & Crowe Lending. Your grandmother borrowed against this house.'],['corvus','Seven nightly installments, each larger than the last. Sunday\'s is 777 coins.'],['corvus','Miss a single payment and the house is mine. Caw.'],['nana','Sweetpea! Thank goodness you came. Don\'t mind the bird.'],['nana','Marigold and I have one more lucky week in us. Let\'s show that crow.']],
+{id:'corvus',n:'Mr. Corvus',short:'Corvus',title:'The House on Larkspur Lane',stake:"Nana's house",ledger:'CORVUS & CROWE',rule:'tricks',ruleN:"Corvus's Tricks",ruleD:'Wednesday, Friday and Sunday, Corvus plays a dirty trick.',mul:1,final:1777,
+ intro:[['nar','Nana Rue lives in a crooked old house on Larkspur Lane, with a jar of buttons...'],['nar','...and Marigold, the 1931 slot machine humming in her parlor.'],['corvus','Corvus. Of Corvus & Crowe Lending. Your grandmother borrowed against this house.'],['corvus','Seven nightly installments, each larger than the last. Sunday\'s is 1,777 coins.'],['corvus','Miss a single payment and the house is mine. Caw.'],['nana','Sweetpea! Thank goodness you came. Don\'t mind the bird.'],['nana','Marigold and I have one more lucky week in us. Let\'s show that crow.']],
  d1:"Evening. That'll be {rent} coins. Nightly.",dn:'{day}. {rent} coins, if you please.',d7:"The final installment. {rent} coins. I'll wait.",
  pay:["Hm. Beginner's luck. It never lasts.",'Paid in full. How... irritating.','You pull that lever like she did. Stubbornly.','Mind the Jams, little gambler. They get worse each night.',"Two nights left. I've already measured the drapes.",'Tomorrow, the final sum. Not a feather less.'],otPay:'Cousin Crowe will be... displeased.',
  paidFinal:'...{rent}. Exactly.',lose:'Short. Tsk, tsk. The deed, if you please.',
  win:[['corvus','The house is yours. Your grandmother would be insufferable about this.'],['nana','I AM insufferable about this! Oh, sweetpea. You did it.'],['nana','Marigold says thank you too. She hasn\'t had this much fun since 1962.']],
  winH:'HOME SWEET<br>HOME',loseH:'THE CROW<br>TAKES IT',
  ot:[['corvus','Not so fast. My cousin Crowe holds the second mortgage.'],['nana','There was a SECOND mortgage?!'],['corvus','Endless installments. Let\'s see how long your luck lasts.']]},
-{id:'velvet',n:'Baroness Velvet',short:'Velvet',title:'Riverboat Rumble',stake:'Marigold herself',ledger:'THE LUCKY LADY',rule:'rake',ruleN:'House Edge',ruleD:'Every pull, Velvet rakes half of your best-paying symbol.',mul:1.25,final:1000,
+{id:'velvet',n:'Baroness Velvet',short:'Velvet',title:'Riverboat Rumble',stake:'Marigold herself',ledger:'THE LUCKY LADY',rule:'rake',ruleN:'House Edge',ruleD:'Every pull, Velvet rakes half of your best-paying symbol.',mul:2.4,final:3950,
  pre:[['nana','Sweetpea... funny story. Last night I played a little rummy on the riverboat.'],['nana','And I may have bet Marigold. And I may have lost. Slightly.']],
  intro:[['nar','The Lucky Lady riverboat glitters on the river, all brass and velvet and very bad decisions.'],['velvet','Baroness Velvet. Charmed, I\'m sure. Your grandmother owes me one slot machine.'],['velvet','I\'ll let you win her back. Seven nights. The house keeps a little... edge.'],['corvus','For the record, I warned her about cats.'],['nana','Nobody asked you, Corvus. Go home.']],
  d1:'Welcome aboard, darling. {rent} coins to keep the lights on.',dn:'{day}, darling. {rent} coins. The house insists.',d7:"Last hand, darling. {rent} coins and she's yours.",
@@ -1887,7 +1900,7 @@ const CH=[
  paidFinal:"...{rent}. Well. The house doesn't always win, apparently.",lose:'Short, darling. Marigold looks lovely in my ballroom.',
  win:[['velvet','Take your machine. And tell Rue her rummy is atrocious.'],['nana','My rummy is ARTISTIC. Come on, Marigold, we\'re going home.']],
  winH:'MARIGOLD<br>IS BACK',loseH:'THE CAT<br>KEEPS HER',ot:[['velvet','Double or nothing, darling? The river never closes.']]},
-{id:'bramble',n:'Sheriff Bramble',short:'Bramble',title:'The Great Pig Caper',stake:"Nana's bail",ledger:'BRAMBLE COUNTY JAIL',rule:'wanted',ruleN:'Wanted Poster',ruleD:'Each night one symbol is WANTED and pays ×3. The bail is steep.',mul:1.8,final:1550,
+{id:'bramble',n:'Sheriff Bramble',short:'Bramble',title:'The Great Pig Caper',stake:"Nana's bail",ledger:'BRAMBLE COUNTY JAIL',rule:'wanted',ruleN:'Wanted Poster',ruleD:'Each night one symbol is WANTED and pays ×3. The bail is steep.',mul:5.6,final:9100,
  pre:[['nar','Two days later: a knock at the door. A badger in a tin star.'],['nana','In my defense, the pig looked lonely.']],
  intro:[['bramble','Sheriff Bramble, Bramble County. Your grandmother is under arrest.'],['bramble','Charge: grand theft pig. Duchess, the blue-ribbon sow. Found in your parlor, wearing a shawl.'],['nana','She was COLD.'],['bramble','Bail is set nightly. Pay seven nights and she walks. Briskly. She is very fast for eighty-four.'],['corvus','I would like it noted that I am enjoying this enormously.']],
  d1:"Bail's {rent} coins. Cash only. No pigs.",dn:'{day}. {rent} coins for the bail fund.',d7:"Final bail payment. {rent} coins and she's a free woman.",
@@ -1895,7 +1908,7 @@ const CH=[
  paidFinal:"...{rent}. She's free. Keep her away from livestock.",lose:'Short on bail. She stays in the cooler. With the spoon.',
  win:[['bramble','Case closed. Rue, the next pig you borrow, I\'m deputizing you.'],['nana','Ooh, a badge? I accept!']],
  winH:'NANA<br>IS FREE',loseH:'NANA STAYS<br>IN JAIL',ot:[['bramble','There\'s also forty years of unpaid parking. She parks in a tow zone.']]},
-{id:'moth',n:'Professor Moth',short:'Moth',title:'The Midnight Auction',stake:"Nana's parlor furniture",ledger:'LAMPLIGHT AUCTIONS',rule:'omen',ruleN:'Bidding War',ruleD:'Jams show up more often, but each one pays +6.',mul:1.55,final:1400,
+{id:'moth',n:'Professor Moth',short:'Moth',title:'The Midnight Auction',stake:"Nana's parlor furniture",ledger:'LAMPLIGHT AUCTIONS',rule:'omen',ruleN:'Bidding War',ruleD:'Jams show up more often, but each one pays +6.',mul:6.4,final:10300,
  pre:[['nana','Sweetpea, quick question. How much do you think a chandelier costs?'],['nana','A big one. Twelve feet tall. I was only waving at a friend at the auction!']],
  intro:[['nar','The Lamplight Auction House. Every lamp in the county, and one very excited moth.'],['moth','Professor Moth, auctioneer! Your grandmother placed the winning bid on Lot 77. The Grand Chandelier.'],['nana','I was WAVING. At Bramble.'],['moth','A wave is a bid, madam. Seven nightly installments, or her parlor furniture goes on the block.'],['moth','Do mind the bidding war. Things get... lively.'],['corvus','I would like to bid on the furniture. Purely hypothetically.']],
  d1:'Lot 77, first installment: {rent} coins.',dn:'{day}. {rent} coins, going once...',d7:'Final installment. {rent} coins, or down comes the gavel.',
@@ -1903,7 +1916,7 @@ const CH=[
  paidFinal:'...{rent}. Going, going... gone! The chandelier is yours, fair and square.',lose:'Short! Going once, going twice... the parlor furniture is sold.',
  win:[['moth','Paid in full! Enjoy your chandelier. I may visit it. Often.'],['nana','It barely fits in the parlor, sweetpea. I love it.']],
  winH:'SOLD TO<br>NANA',loseH:'GOING, GOING,<br>GONE',ot:[['moth','Another lot! A matching lamp! Bidding starts NOW.']]},
-{id:'croakley',n:'Count Croakley',short:'Croakley',title:'The Grand Machine Pageant',stake:'Larkspur Lane (again)',ledger:'CROAKLEY ESTATES',rule:'rigged',ruleN:'Rigged Reels',ruleD:'Every pull, one reel sticks and pays nothing.',mul:1.3,final:1300,
+{id:'croakley',n:'Count Croakley',short:'Croakley',title:'The Grand Machine Pageant',stake:'Larkspur Lane (again)',ledger:'CROAKLEY ESTATES',rule:'rigged',ruleN:'Rigged Reels',ruleD:'Every pull, one reel sticks and pays nothing.',mul:4,final:10800,
  pre:[['nana','So. There\'s a pageant. For slot machines.'],['nana','I entered Marigold. And I MAY have put the house up as the prize. She\'ll win! Probably!']],
  intro:[['croakley','Count Croakley, of Croakley Estates. Owner of Big Bertha, finest machine in the county.'],['croakley','The pageant lasts seven nights. Fees are due nightly. Miss one, and Larkspur Lane is mine.'],['croakley','I may have... adjusted the judging. One reel jams each pull. Very old pageant rules.'],['corvus','He cheated me at croquet in 1971.'],['nana','Everyone cheated you at croquet, dear.']],
  d1:'Entry fee: {rent} coins. Ribbit.',dn:'{day}. Pageant fees: {rent} coins.',d7:'Final judging. {rent} coins, or the house is mine.',
@@ -1911,7 +1924,7 @@ const CH=[
  paidFinal:'...{rent}. The blue ribbon goes to... Marigold. Ribbit.',lose:'Short! Larkspur Lane makes a lovely summer home.',
  win:[['croakley','Best in show: Marigold. I am going to go sit in my pond.'],['nana','Wear the ribbon, Marigold! You earned it!']],
  winH:'BEST IN<br>SHOW',loseH:'THE FROG<br>TAKES IT',ot:[['croakley','A rematch! Big Bertha demands it!']]},
-{id:'goose',n:'Clerk Gertrude',short:'Gertrude',title:'Forms in Triplicate',stake:"Marigold's license",ledger:'COUNTY CLERK',rule:'redtape',ruleN:'Red Tape',ruleD:'Every night, Gertrude adds 2 Red Tape to your bag. They pay nothing.',mul:1.45,final:1450,
+{id:'goose',n:'Clerk Gertrude',short:'Gertrude',title:'Forms in Triplicate',stake:"Marigold's license",ledger:'COUNTY CLERK',rule:'redtape',ruleN:'Red Tape',ruleD:'Every night, Gertrude adds 2 Red Tape to your bag. They pay nothing.',mul:6.3,final:12500,
  pre:[['nar','A letter arrives. Stamped. Restamped. Stamped again.'],['nana','Sweetpea, did you know you need a LICENSE to keep a slot machine in your parlor? Since 1952?']],
  intro:[['goose','Gertrude Goose, County Clerk. Mrs. Rue has operated an unlicensed amusement device for seventy-four years.'],['nana','She is not a DEVICE. She is Marigold.'],['goose','Fines are due nightly. Forms, in triplicate. Miss one payment and Marigold is impounded.'],['goose','I will also be adding paperwork. Nightly. It is what I do.'],['corvus','She has fined me twice. For loitering. I am a bird.']],
  d1:'Form 1-A. {rent} coins. Initial here.',dn:'{day}. {rent} coins. Initial, date, sign.',d7:'Final filing. {rent} coins and the license is yours.',
@@ -1919,7 +1932,7 @@ const CH=[
  paidFinal:'...{rent}. Approved. Marigold is officially, legally, extremely licensed.',lose:'Short. Marigold is impounded. Please take a number.',
  win:[['goose','License approved. Frame it. Laminate it. Do not lose it.'],['nana','I\'ll hang it right over the parlor door, next to the horseshoe!']],
  winH:'FULLY<br>LICENSED',loseH:'MARIGOLD<br>IMPOUNDED',ot:[['goose','Annual renewal is due. Annually. Starting now.']]},
-{id:'bruno',n:'Chef Bruno',short:'Bruno',title:'The County Bake-Off',stake:"Grandpa Walt's pie recipe",ledger:"BRUNO'S BISTRO",rule:'picky',ruleN:'Picky Palate',ruleD:'Any symbol that lands with no others of its kind pays nothing.',mul:1.6,final:1650,
+{id:'bruno',n:'Chef Bruno',short:'Bruno',title:'The County Bake-Off',stake:"Grandpa Walt's pie recipe",ledger:"BRUNO'S BISTRO",rule:'picky',ruleN:'Picky Palate',ruleD:'Any symbol that lands with no others of its kind pays nothing.',mul:11.8,final:19500,
  pre:[['nana','So the county bake-off was LAST week, sweetpea.'],['nana','I lost. To a bulldog. And I may have bet Grandpa Walt\'s pie recipe on a rematch.']],
  intro:[['bruno','Chef Bruno, of Bruno\'s Bistro. Your grandmother\'s pie is... adequate. Her recipe, however, I want.'],['bruno','Rematch terms: seven nights of entry fees. Miss one, and the recipe is mine.'],['bruno','And I am a picky judge. Bring me pairs, not loners.'],['nana','Walt\'s recipe stays in this family. Over my rolling pin.'],['corvus','For the record, her pie IS excellent. I have had it every Thursday for forty years.']],
  d1:'Entry fee. {rent} coins. Hmph.',dn:'{day}. {rent} coins. Hmph.',d7:'Final tasting. {rent} coins, or the recipe is mine.',
@@ -1927,7 +1940,7 @@ const CH=[
  paidFinal:'...{rent}. Paid. Walt\'s recipe stays with you. ...Could I have a slice?',lose:'Short! The recipe is mine. Nutmeg. I KNEW it.',
  win:[['bruno','The recipe stays. And I would like the rest of that pie, please.'],['nana','Pull up a chair, Bruno. There\'s always room for one more.']],
  winH:'BLUE RIBBON<br>PIE',loseH:'RECIPE<br>LOST',ot:[['bruno','Seconds! A rematch of the rematch!']]},
-{id:'crowe',n:'Cornelius Crowe',short:'Crowe',title:'The Whole Street',stake:'All of Larkspur Lane',ledger:'CROWE HOLDINGS',rule:'mix',ruleN:'All Together Now',ruleD:"Every night brings back an old rival's rule.",mul:2,final:2200,
+{id:'crowe',n:'Cornelius Crowe',short:'Crowe',title:'The Whole Street',stake:'All of Larkspur Lane',ledger:'CROWE HOLDINGS',rule:'mix',ruleN:'All Together Now',ruleD:"Every night brings back an old rival's rule.",mul:19.8,final:32500,
  pre:[['nar','A week later, a long black car pulls up. Corvus goes very pale. For a crow.'],['corvus','That... is my cousin Cornelius. He owns the bank. He owns most banks.']],
  intro:[['crowe','Cornelius Crowe. Chairman, Crowe Holdings. I have bought every IOU your grandmother ever signed.'],['crowe','Riverboat debts. Bail. A chandelier. Pageant fees. A license. A pie. It adds up to Larkspur Lane. The whole street.'],['nana','In my defense, I have had a VERY exciting year.'],['crowe','One week. Pay my installments and the IOUs are torn up. Miss one, and I build a parking lot.'],['crowe','I have hired some... consultants. You may know them.'],['corvus','I am NOT helping him. I am helping you. Quietly. Mostly.'],['nana','Sweetpea. Whatever happens... thank you for this week. And all the others.']],
  d1:'First installment: {rent} coins. I do not do small talk.',dn:'{day}. {rent} coins. Time is money. Yours.',d7:'The final installment. {rent} coins. Then we are done.',
