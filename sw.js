@@ -1,5 +1,5 @@
 // Marigold service worker: plays fully offline, updates in the background.
-const CACHE='marigold-6f6e2388';
+const CACHE='marigold-de7749de';
 const ASSETS=["./", "./index.html", "./manifest.webmanifest", "./icons/apple-touch-icon.png", "./icons/favicon-32.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./fonts/nunito-700.woff2", "./fonts/nunito-800.woff2", "./fonts/nunito-900.woff2", "./fonts/press-start-2p.woff2"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
