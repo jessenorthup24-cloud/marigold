@@ -758,6 +758,11 @@ b,strong{font-weight:900}
 .cp-t .rup{display:block;font-style:normal;font-size:12px;font-weight:800;color:#ff8a9a;margin-top:2px}
 .nc-up{font-weight:900;font-size:13px;color:#ff8a9a;margin:-8px auto 14px;max-width:300px}
 .cp-t .rec{display:block;font-style:normal;font-size:12px;font-weight:800;color:#a8fbff;margin-top:3px}
+.quip{position:absolute;left:10px;right:10px;bottom:calc(76px + var(--sab));z-index:30;display:flex;align-items:flex-end;gap:6px;pointer-events:none;opacity:0;transform:translateY(30px);transition:opacity .25s,transform .35s cubic-bezier(.2,1.4,.3,1)}
+.quip.on{opacity:1;transform:none;pointer-events:auto}
+.quip img{flex:none;width:64px;height:64px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));animation:ghost 2.4s ease-in-out infinite}
+.quip .qb{position:relative;flex:1;margin-bottom:12px;background:#fffaf0;color:#2a1206;border:3px solid var(--out);border-radius:14px;padding:8px 11px;font-size:15px;font-weight:700;line-height:1.28;box-shadow:0 4px 0 var(--out),0 10px 24px rgba(0,0,0,.45);min-height:40px}
+.quip .qb::after{content:'';position:absolute;left:-11px;bottom:10px;border:8px solid transparent;border-right-color:var(--out);border-left:0}
 @media (max-height:680px){.t-show{transform:scale(.85)}.t-top{margin-top:2vh}.nana-row img{width:80px;height:80px}.dport,.dport img{width:92px;height:92px}.dname{left:110px}.who-corvus .dname{right:110px}}
 </style>
 </head>
@@ -817,6 +822,7 @@ b,strong{font-weight:900}
    </div>
    <div class="tip" id="tip"></div>
   </div>
+  <div class="quip" id="quip"><img class="px" id="quipImg"><div class="qb" id="quipTxt"></div></div>
   <div class="tray"><div class="charms" id="charms"></div><button class="bagbtn" id="bBag"><span>BAG</span><b id="hBagN">0</b></button></div>
  </section>
 
@@ -853,7 +859,7 @@ b,strong{font-weight:900}
  <div class="ov" id="menu"><div class="panel" style="top:auto;bottom:calc(14px + var(--sab))"><div class="panel-h"><h2>PAUSED</h2><button class="xbtn" id="mX">✕</button></div><div class="menu-b">
   <button class="btn" id="mResume">RESUME</button>
   <div class="t-row"><button class="btn ghost" id="mSfx">SFX</button><button class="btn ghost" id="mMus">MUSIC</button></div>
-  <div class="t-row"><button class="btn ghost" id="mAlbum">ALBUM</button><button class="btn ghost" id="mAch">TROPHIES</button></div><button class="btn ghost" id="mHow">HOW TO PLAY</button>
+  <div class="t-row"><button class="btn ghost" id="mAlbum">ALBUM</button><button class="btn ghost" id="mAch">TROPHIES</button></div><div class="t-row"><button class="btn ghost" id="mHow">HOW TO PLAY</button><button class="btn ghost" id="mChat">NANA: ON</button></div>
   <button class="btn ghost" id="mQuit">SAVE &amp; QUIT</button>
   <button class="btn red" id="mGive">ABANDON RUN</button>
  </div></div></div>
@@ -1462,7 +1468,7 @@ function leverSetup(){const lv=$('#lever');
  const up=()=>{if(!LV.drag)return;LV.drag=false;if(!LV.moved&&performance.now()-LV.t0<400)pullLever(false);else animLever(0,450,eEl)};
  lv.addEventListener('pointerup',up);lv.addEventListener('pointercancel',up);
  document.addEventListener('keydown',e=>{if((e.code==='Space'||e.code==='Enter')&&canPull()){e.preventDefault();auInit();pullLever(false)}})}
-async function pullLever(dragged){if(!canPull()){animLever(0,400,eEl);return}busy=true;$('#lvHint').style.display='none';$('#lever').classList.remove('ready');S.lever();vib(18);
+async function pullLever(dragged){if(!canPull()){animLever(0,400,eEl);return}busy=true;$('#quip').classList.remove('on');$('#lvHint').style.display='none';$('#lever').classList.remove('ready');S.lever();vib(18);
  await animLever(1,dragged?70:160,eOut);animLever(0,650,eEl);doPull()}
 
 /* ================= SPIN ================= */
@@ -1570,7 +1576,7 @@ async function doPull(pre){try{
  if(!run.offer)run.offer=genOffer(has('opera')?4:3);run.phase='pick';save();
  const ch=await showPick(run.offer);if(ch){run.bag.push(mkInst(ch));bump($('#bBag'))}run.offer=null;hud();
  if(run.pullsLeft<=0){busy=false;await rentScene();return}
- run.phase='idle';save();busy=false;idleHint();
+ run.phase='idle';save();busy=false;idleHint();maybeQuip(res);
  }catch(err){console.error(err);busy=false;if(run)run.phase='idle'}}
 const TIPS=['Tap any symbol on the reels to read what it does.','Lines add <b>MULT</b>, and they count both ways: rows <b>and</b> columns.','A lean bag lands its best symbols more often. Skipping is allowed!','Up to <b>20</b> symbols land each pull. Extras wait their turn.','Luck makes rare symbols show up in your picks.','Horseshoes knock Jams loose before they count.','Rainbows are wild: they fit into any line.','Leftover coins carry into the next night.'];let tipK=0;
 function tip(t){const e=$('#tip');e.style.opacity=0;setTimeout(()=>{e.innerHTML=t;e.style.opacity=1},250)}
@@ -1664,7 +1670,7 @@ async function startNight(){wasReady=null;const ni=nightInfo(run.night);run.tric
  disp.coins=disp.target=run.coins;disp.win=disp.winT=0;$('#hWin').textContent='0';showScreen('game');layoutSize();hud();busy=true;await sleep(250);await nightCard();
  if(run.endless&&run.night>=10)unlock('overtime');if(run.endless&&run.night>=12)unlock('insomniac');
  if(run.night===1&&run.pulls===0&&!META.tips){META.tips=1;saveMeta();await say([['nana','Pull Marigold\'s lever, sweetpea. Drag it down, or just give it a tap.'],['nana','Symbols help their neighbors. After each pull, you pick a new one to add.'],['nana','And watch for Jams. Three at once and Marigold jams up. That pull pays nothing.']])}
- busy=false;tip(TIPS[(tipK++)%TIPS.length]);idleHint()}
+ busy=false;tip(TIPS[(tipK++)%TIPS.length]);idleHint();nightQuip()}
 
 /* ================= END ================= */
 async function victory(){const C=chOf(),ci=run.ch||0;const first=!META.camp.cleared[ci];META.wins++;META.camp.cleared[ci]=1;saveMeta();setTimeout(checkUnlocks,200);unlock(['win','ch2','ch3','ch4','ch5','ch6','ch7','ch8'][ci]);if(ci===CH.length-1)unlock('campaign');if(!run.st.hexes)unlock('flawless');if(run.bag.length<=12)unlock('lean');if(!run.st.bought)unlock('nocharm');if(META.wins>=3)unlock('wins3');S.big();confetti(140);flash('#fff3a0',.6,700);
@@ -1969,6 +1975,155 @@ function openCamp(){const b=$('#cpBody');b.innerHTML='';const has=!!LS.get('mg_r
   r.onclick=()=>{if(!ok){S.ui();floatAt(r,'LOCKED','bad');return}auInit();if(has&&!r.dataset.sure){r.dataset.sure=1;r.querySelector('.cp-go').textContent='REPLACE RUN?';S.ui();setTimeout(()=>{delete r.dataset.sure;r.querySelector('.cp-go').textContent='▶'},2600);return}S.ui();$('#camp').classList.remove('on');startNew(i)};b.appendChild(r);if(i<CH.length-1)b.appendChild(el('div','cp-road'))});
  $('#camp').classList.add('on')}
 $('#cpX').onclick=()=>{S.ui();$('#camp').classList.remove('on')};
+/* ================= NANA QUIPS ================= */
+const QUIPS={
+gen:[
+"Marigold was built in 1931. She's older than me, and don't you dare tell her I said so.",
+"Your great-grandpa Otis built Marigold out of a church organ's leftover brass. Waste not!",
+"I won my first jackpot on Marigold when I was nine. Spent it all on licorice. No regrets.",
+"Grandpa Walt proposed right here. Got three cherries, then got down on one knee. Terrible knees.",
+"The 1962 County Fair! I beat Corvus at the ring toss, the pie table and the slot machine. Same afternoon.",
+"Corvus has come to tea every Thursday for forty years. He says it's to collect. He always takes two scones.",
+"Mister Biscuits is not allowed on the machine. Mister Biscuits has never once listened.",
+"Gerald the piggy bank has been saving up since 1974. For what, he won't say.",
+"That jar of buttons? Four hundred buttons and one very old coin. I'm saving the coin for an emergency.",
+"I keep a horseshoe over the parlor door. Points up, so the luck doesn't drain out.",
+"Larkspur Lane used to be a cow path. The cows were very orderly about it.",
+"Walt used to polish Marigold's bells every Sunday. I polish them on Saturdays, to keep her guessing.",
+"Your mother learned to count on Marigold's reels. She still adds things up in sevens.",
+"If you ever hear Marigold hum at night, that's just the old wiring. Probably. Give her a pat.",
+"I once won a goat at the fair. Named him Lucky. He ate my hat. Very lucky for him.",
+"Every good machine needs a good name. Marigold was named after my mother's garden.",
+"I don't gamble, sweetpea. I invest in very short-term entertainment.",
+"Walt's secret pie ingredient is nutmeg. Don't tell Bruno. Oh dear, I've told you.",
+"When I was a girl, a whole pull cost one penny. And we walked uphill to pull it.",
+"Marigold's lever was replaced in 1958. She sulked for a month.",
+"My mother kept the album first. Then me. One day, you.",
+"I've never once lost at checkers. I have, however, flipped the board twice.",
+"The secret to luck? Show up, pull the lever, and say thank you either way.",
+"Walt always said: 'A full bag is a slow bag.' He was talking about groceries. Still applies.",
+"Corvus's monocle is just window glass. He thinks it makes him look distinguished. It does, a bit.",
+"I knitted Marigold a cozy for winter once. She looked ridiculous. She loved it.",
+"Tickets, coins, buttons... this house runs on small round things.",
+"Your grandfather and I danced in this parlor every anniversary. Marigold kept the beat.",
+"I have a cousin who sells encyclopedias. Do NOT open the door on Tuesdays.",
+"Bells in the top row ring louder. Walt swore it was physics. I swear it's manners.",
+"Every coin in this machine has a story. Most of them are about me being right.",
+"Lunch is at noon, supper is at six, and jackpots are whenever they please.",
+"I've had this shawl since 1979. It's seen three weddings and one very bad dance-off.",
+"The roof leaks over the pantry. I keep a bucket there. Gerald thinks it's a pool.",
+"My best advice? Never trust a crow with a ledger. My second best: always offer him tea anyway.",
+"Marigold doesn't take credit cards. Marigold barely takes compliments.",
+"Back in my day, we didn't have Lucky Cards. We had Lucky Socks. Same principle.",
+"If the reels feel sticky, hum a little. It doesn't help the reels, but it helps you.",
+"I keep the good cookies in the cookie jar and the great cookies behind the flour.",
+"Somebody has to keep this street interesting, sweetpea. I volunteered in 1961.",
+"Walt carved our initials under Marigold's left leg. Don't look. It's private. Look later.",
+"The trick to a good line is patience. The trick to a great line is cherries.",
+"Every Christmas I put a little bow on Marigold's lever. She stands up straighter.",
+"I have outlived three refrigerators and one very stubborn lawnmower.",
+"Don't tell anyone, but I talk to the plants. They're terrible listeners.",
+"My knees predict rain. Marigold predicts jackpots. Between us, we're very useful.",
+"There's a loose floorboard by the window. That's where I keep my emergency licorice.",
+"You get your stubborn streak from me. You're welcome.",
+"Hard work, a kind word and a firm lever pull. That's the whole recipe.",
+"Grandpa Walt could fix anything with a paperclip and a hymn.",
+"Say grace before supper and please before pulling. Manners make luck.",
+],
+ch:{
+corvus:[
+"Corvus pretends he wants the house. He really wants my lemon bars.",
+"That bird has a calendar with every Thursday circled. In red. Since 1984.",
+"Corvus once tried to repossess my rocking chair. I was sitting in it. He gave up after an hour.",
+"Don't let the top hat fool you. Corvus is mostly feathers and paperwork.",
+"Corvus and Crowe Lending! Crowe is his cousin. We don't talk about Crowe. Yet.",
+"He'll caw and fuss, but he left a birthday card in my mailbox every year. Unsigned. Feathers everywhere.",
+],
+velvet:[
+"Velvet cheats at rummy. I cheat at rummy. It's a very fair game, all things considered.",
+"That riverboat has a chandelier shaped like a fish. Tasteful? No. Memorable? Yes.",
+"Velvet has nine lives and spends eight of them at the card table.",
+"Never play cards with a cat who wears a tiara. I learned that the expensive way.",
+"Velvet's whiskers twitch when she's bluffing. They twitch all the time. Very confusing.",
+],
+bramble:[
+"In my defense, Duchess the pig looked cold. And lonely. And she likes my shawl.",
+"Sheriff Bramble once gave me a ticket for parking too enthusiastically.",
+"The jail serves terrible tea. I've written three letters about it.",
+"Bramble's badge is real tin. He polishes it every morning. I've seen him wink at it.",
+"Duchess won the blue ribbon twice. She's very proud. She's also very heavy.",
+],
+moth:[
+"I was waving at Bramble across the room! How was I supposed to know a wave was a bid?",
+"A twelve-foot chandelier. It's in the driveway. The neighbors think I'm opening a ballroom.",
+"Professor Moth stands VERY close to the lamps. I've stopped asking why.",
+"Auctions are like slot machines, sweetpea, except the reels are people waving.",
+"Lot 77, the Grand Chandelier. Lot 78 was a spoon. I should've waved at Lot 78.",
+],
+croakley:[
+"Big Bertha wears gold-plated bells. Gaudy! Marigold has class.",
+"Count Croakley has cheated at every pageant since 1971. Everybody knows. Nobody can prove it.",
+"I entered Marigold in the pageant for fun. Putting the house up as the prize was... also for fun.",
+"Croakley lives in a pond with a chandelier in it. Must be where Moth gets his ideas.",
+"If a reel sticks, that's Croakley. Give it a firm look. It helps.",
+],
+goose:[
+"Seventy-four years without a license! In my defense, nobody told me. In triplicate.",
+"Gertrude has a stamp for everything. She has a stamp that says STAMP.",
+"I brought Gertrude cookies. She filed them. Under C.",
+"Red Tape isn't worth a thing, sweetpea. Toss it at the shop when you can.",
+"Gertrude fined Corvus for loitering. He's a bird. It's his whole job.",
+],
+bruno:[
+"Bruno beat my pie by one point. One! The judge was his mother.",
+"Walt's pie recipe stays in this family. It's written on the back of a hymnal. Very safe.",
+"Bruno says my crust is 'rustic.' I say his manners are.",
+"Pairs, sweetpea! Bruno hates a lonely symbol. Honestly, so do I.",
+"Bruno's soufflés never fall. It's infuriating. I've watched one for an hour.",
+],
+crowe:[
+"Cornelius Crowe owns most banks. He still reuses tea bags. Rich people are strange.",
+"Every IOU I ever signed! In my defense, it's been a VERY exciting year.",
+"Corvus says Cornelius was a sweet chick once. Hard to picture. He has a briefcase for a heart.",
+"A parking lot. On Larkspur Lane. Over my rolling pin, sweetpea.",
+"Everyone I've ever annoyed is helping us now. That's a lot of people. I've been busy.",
+],
+},
+big:["THAT'S my grandchild! Somebody call the newspaper!","Oh my stars, look at those coins! Walt would've danced on the table.","Marigold hasn't paid out like that since the Eisenhower years!","Now THAT is how you pull a lever!","Gerald is jealous. Gerald has never held that much.","Put some of that in the button jar for a rainy day!","I felt that one in my knees. Good feeling!","Corvus just dropped his monocle. I heard it from here."],
+jam:["Jammed! Give her a pat, sweetpea. She's eighty-some years old.","Those X's are just Marigold clearing her throat.","Oh, pish. Even the best machines sneeze sometimes.","Walt used to fix that with a gentle kick. Gentle!","A Horseshoe will knock those Jams loose. Just saying.","Deep breath. Next pull's a fresh start."],
+last:["Last pull, sweetpea. Make it a good one!","One pull left. Pull like you mean it!","I've got my lucky socks on. Both of them. Go!","Last one! Marigold always tries hardest when it counts."],
+covered:["Rent's covered! Anything else is pie money.","There we go! The crow can't touch us tonight.","Rent paid! Now let's show off a little.","Covered! Keep going, every extra coin earns Tickets."],
+golden:["The GOLDEN SPIN! Walt and I saw one of those in 1966. We named a cat after it.","Golden! Everything doubles. Even my excitement."],
+line:["Lines are where the real money hides, sweetpea.","Look at that line! Neat as a pew on Sunday.","Rows AND columns count. Marigold's very generous that way."],
+sym:{
+cat:["Mister Biscuits! Get OFF the reels. ...Fine, stay.","Keep that Cat near the Milk, sweetpea. He's a simple creature."],
+bee:["Bees and Flowers! My garden's in that machine somewhere.","Bees love Honey. I love Bees. Everybody wins."],
+seven:["Sevens! Grandpa Walt kept a lucky seven in his hatband.","More Sevens means more Mult. That's just arithmetic, dear."],
+piggy:["Gerald's on the board! Say hello, Gerald.","Every time Gerald lands, he gets a little richer. Like me."],
+cherry:["Cherries always come in pairs. Like gossip.","Line up those Cherries, sweetpea. They love company."],
+diamond:["That Diamond's from my wedding ring. Or a very good fake. I forget which."],
+chest:["Find a Key for that Chest! There's treasure in there. I put it there."],
+bomb:["Careful with that Bomb! The box said FIREWORKS. Probably."],
+hen:["The Hen runs this yard. She runs this house, honestly."],
+moon:["The Moon makes everything next to it shine brighter. Like a good friend."],
+rainbow:["A Rainbow fits into any line. Very accommodating. I aspire to that."],
+crown:["That Crown is from the 1962 fair. I won it. Obviously."],
+},
+night:{1:["Monday! A fresh week, a fresh bag of luck.","Mondays are for small coins and big plans."],4:["Thursday! Tea day. Corvus will be insufferable."],6:["Saturday night! Marigold always shines on Saturdays."],7:["Sunday. Big rent today. We've got this, sweetpea.","It's Sunday. Say a little prayer and pull a big lever."]}
+};
+let quipRecent=[],quipCD=0,quipT=null;
+function quipPick(list){const fresh=list.filter(q=>!quipRecent.includes(q));const q=pick(fresh.length?fresh:list);quipRecent.push(q);if(quipRecent.length>60)quipRecent.shift();return q}
+function quipFor(res){const rent=nightInfo(run.night).rent,C=chOf();
+ if(res){if(res.hex&&rnd()<.75)return quipPick(QUIPS.jam);if(res.golden&&rnd()<.8)return quipPick(QUIPS.golden);if(res.total>=rent*.6&&res.total>=60&&rnd()<.7)return quipPick(QUIPS.big);
+  if(run.pullsLeft===1&&run.coins<rent&&rnd()<.6)return quipPick(QUIPS.last);if(run.coins>=rent&&run.coins-res.total<rent&&rnd()<.6)return quipPick(QUIPS.covered);
+  if(res.lines.length&&rnd()<.25)return quipPick(QUIPS.line);
+  const syms=[...new Set(res.cells.map(c=>c.t))].filter(t=>QUIPS.sym[t]);if(syms.length&&rnd()<.35)return quipPick(QUIPS.sym[pick(syms)])}
+ if(!run.daily&&QUIPS.ch[C.id]&&rnd()<.4)return quipPick(QUIPS.ch[C.id]);
+ return quipPick(QUIPS.gen)}
+function nanaSays(text){if(META.chatter===false)return;const q=$('#quip');clearTimeout(quipT);$('#quipImg').src=SPR.nana.url;q.classList.remove('on');void q.offsetWidth;q.classList.add('on');const t=typer($('#quipTxt'),text,'nana',24);quipT=setTimeout(()=>q.classList.remove('on'),Math.min(9000,2800+text.length*45))}
+function maybeQuip(res,force){if(!run||META.chatter===false||SCREEN!=='game')return;if(run.night===1&&run.pulls<2&&!run.ch)return;if(quipCD>0&&!force){quipCD--;return}
+ const urgent=res&&(res.hex||res.golden||(run.pullsLeft===1&&run.coins<nightInfo(run.night).rent));if(!force&&!urgent&&rnd()>.38)return;quipCD=2;setTimeout(()=>{if(canPull()||SCREEN==='game')nanaSays(quipFor(res))},500)}
+function nightQuip(){if(!run||run.daily||META.chatter===false)return;const l=QUIPS.night[run.night];if(l&&rnd()<.6)setTimeout(()=>nanaSays(quipPick(l)),700)}
 /* ================= TITLE / FLOW ================= */
 function showScreen(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));SCREEN=id;musPlay(id==='game'?'main':'parlor')}
 let tShowIv=null;
@@ -1996,7 +2151,9 @@ function wire(){
  $('#bDaily').onclick=()=>{auInit();S.ui();const b=$('#bDaily');if(LS.get('mg_run',null)&&!b.dataset.sure){b.dataset.sure=1;b.firstChild.textContent='REPLACE YOUR RUN?';setTimeout(()=>{delete b.dataset.sure;b.firstChild.textContent='DAILY SPIN'},2600);return}delete b.dataset.sure;b.firstChild.textContent='DAILY SPIN';startDaily()};$('#bAlbum').onclick=()=>{auInit();S.ui();openAlbum()};$('#mAlbum').onclick=()=>{S.ui();openAlbum()};$('#bHow').onclick=()=>{auInit();S.ui();openHow()};
  $('#bSfx').onclick=()=>{auInit();setSfx(!META.sfx);S.ui()};$('#bMus').onclick=()=>{auInit();setMus(!META.mus);S.ui()};
  $('#mSfx').onclick=()=>{setSfx(!META.sfx);S.ui()};$('#mMus').onclick=()=>{setMus(!META.mus);S.ui()};
- $('#bMenu').onclick=()=>{auInit();S.ui();$('#menu').classList.add('on')};
+ $('#bMenu').onclick=()=>{auInit();S.ui();$('#mChat').textContent='NANA: '+(META.chatter===false?'OFF':'ON');$('#menu').classList.add('on')};
+ $('#mChat').onclick=()=>{META.chatter=META.chatter===false;saveMeta();$('#mChat').textContent='NANA: '+(META.chatter===false?'OFF':'ON');S.ui();if(META.chatter)nanaSays('Oh good, I had SO much to tell you.')};
+ $('#quip').onclick=()=>{$('#quip').classList.remove('on')};
  $('#mX').onclick=$('#mResume').onclick=()=>{S.ui();$('#menu').classList.remove('on')};
  $('#mHow').onclick=()=>{S.ui();openHow()};$('#mAch').onclick=()=>{S.ui();openAch()};
  $('#mQuit').onclick=()=>{S.ui();$('#menu').classList.remove('on');if(!busy)save();toTitle()};
